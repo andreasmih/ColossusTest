@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvCalculator
+namespace OddsCalculator
 {
     public class Calculator
     {
@@ -18,13 +18,16 @@ namespace EvCalculator
         /// Some pools have consolation prizes for tickets missing 1 leg, or more, e.g. a ticket get 5/6 legs correct, can win consolation 1 prize for a pool with 
         /// When more than 1 ticket wins a prize, they share the prize.
         /// Every outcome of the match has a certain probability and they should add up to the total of 1.
-        /// The EV (expected value) of a ticket = the prize to win X probability of winning
+        /// This calculator will need to work out the odds of winning the WHOLE prizes alone for each ticket, 
+        /// the implication is that if a 100% winning ticket needs to share the prize with others, its odds of winning the WHOLE prizes is not 100%;
+        /// and if the pool has consolation prizes, the function should return the SUM of odds of winning each prizes in whole for every ticket, 
+        /// i.e. odds of winning the win prize + odds of getting consolation 1 prize + odds of getting consolation 2 prizes + ... + odds of getting the consolation up to the prizes parameter
         /// </summary>
         /// <param name="tickets">e.g. {{1,1,1,1,1},{2,2,2,2,2},{3,3,3,3,3},{1,1,2,3,3}} for 4 tickets</param>
         /// <param name="probabilities">e.g. {{0.333, 0.333, 0.333},{0.333, 0.333, 0.333},{0.333, 0.333, 0.333},{0.333, 0.333, 0.333},{0.333, 0.333, 0.333}}</param>
-        /// <param name="prizes">e.g.{ 5000 } for single winning prize, or { 1000000, 1000, 500 } for win, consolation 1 and consolation 2 prizes</param>
-        /// <returns>Ev in 8 decimal places, e.g. { 20.57613169m, 20.57613169m, 20.57613169m, 20.57613169m, 20.57613169m }</returns>
-        public static decimal[] CalculateEV(int[,] tickets, double[,] probabilities, decimal[] prizes)
+        /// <param name="prizes">e.g. Win == 5/5, Consolation1==4/5, Consolation2==3/5 and so on</param>
+        /// <returns>Odds in 8 decimal places, e.g. Win prize odds { 0.00411522m, 0.00411522m, 0.00411522m, 0.00411522m, 0.00411522m }</returns>
+        public static decimal[] CalculateWinningOdds(int[,] tickets, double[,] probabilities, PrizeType prizes)
         {
             var count = tickets.GetLength(0);
             var evResults = new decimal[count];
@@ -40,6 +43,13 @@ namespace EvCalculator
 
 
             return evResults;
+        }
+
+        public enum PrizeType
+        {
+            Win,
+            Consolation1,
+            Consolation2
         }
     }
 }
