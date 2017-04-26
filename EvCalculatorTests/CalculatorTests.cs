@@ -62,7 +62,7 @@ namespace OddsCalculator.Tests
         }
 
         /// <summary>
-        /// Additional test for bonus point
+        /// Advanced test - bonus point
         /// </summary>
         [TestMethod()]
         public void BonusTest_CalculateWinningOddsConsolationTest()
