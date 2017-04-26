@@ -16,12 +16,12 @@ namespace OddsCalculator
         /// If the outcome of the match is exactly as the ticket selected, the ticket wins the that leg of the pool. 
         /// When the ticket selects all the correct outcome of the legs, it wins the top pool prize;
         /// Some pools have consolation prizes for tickets missing 1 leg, or more, e.g. a ticket get 5/6 legs correct, can win consolation 1 prize for a pool with 
-        /// When more than 1 ticket wins a prize, they share the prize.
+        /// When more than 1 ticket wins a prize, the tickets share the prize.
         /// Every outcome of the match has a certain probability and they should add up to the total of 1.
-        /// This calculator will need to work out the odds of winning the WHOLE prizes alone for each ticket, 
-        /// the implication is that if a 100% winning ticket needs to share the prize with others, its odds of winning the WHOLE prizes is not 100%;
-        /// and if the pool has consolation prizes, the function should return the SUM of odds of winning each prizes in whole for every ticket, 
-        /// i.e. odds of winning the win prize + odds of getting consolation 1 prize + odds of getting consolation 2 prizes + ... + odds of getting the consolation up to the prizes parameter
+        /// This calculator will need to work out the odds of winning the whole prize alone for each ticket, 
+        /// the implication is that if a winning ticket needs to share the prize with others, its odds of winning the whole prize is not 100%.
+        /// In addition, if the pool has consolation prizes, the function should return the SUM of odds of winning each prize in whole for every ticket, 
+        /// e.g. odds of winning the win prize + odds of getting consolation 1 prize + odds of getting consolation 2 prizes + ... + odds of getting the consolation up to the prizes parameter
         /// </summary>
         /// <param name="tickets">e.g. {{1,1,1,1,1},{2,2,2,2,2},{3,3,3,3,3},{1,1,2,3,3}} for 4 tickets</param>
         /// <param name="probabilities">e.g. {{0.333, 0.333, 0.333},{0.333, 0.333, 0.333},{0.333, 0.333, 0.333},{0.333, 0.333, 0.333},{0.333, 0.333, 0.333}}</param>
