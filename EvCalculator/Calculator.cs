@@ -18,9 +18,9 @@ namespace OddsCalculator
         /// Some pools have consolation prizes for tickets missing 1 leg, or more, e.g. a ticket get 5/6 legs correct, can win consolation 1 prize for a pool with 
         /// When more than 1 ticket wins a prize, the tickets share the prize.
         /// Every outcome of the match has a certain probability and they should add up to the total of 1.
-        /// This calculator will need to work out the odds of winning the whole prize alone for each ticket, 
-        /// the implication is that if a winning ticket needs to share the prize with others, its odds of winning the whole prize is not 100%.
-        /// In addition, if the pool has consolation prizes, the function should return the SUM of odds of winning each prize in whole for every ticket, 
+        /// This calculator will need to work out the value of each ticket in the form of decimal winning odds.
+        /// When a winning ticket needs to share the prize with others, its value decreases, so its winning odds is not 100%, not 0% either.
+        /// In addition, if the pool has consolation prizes, the function should return the SUM of winning odds for every ticket, 
         /// e.g. odds of winning the win prize + odds of getting consolation 1 prize + odds of getting consolation 2 prizes + ... + odds of getting the consolation up to the prizes parameter
         /// </summary>
         /// <param name="tickets">e.g. {{1,1,1,1,1},{2,2,2,2,2},{3,3,3,3,3},{1,1,2,3,3}} for 4 tickets</param>
