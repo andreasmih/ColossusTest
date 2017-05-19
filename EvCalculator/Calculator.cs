@@ -30,7 +30,7 @@ namespace OddsCalculator
         public static decimal[] CalculateWinningOdds(int[,] tickets, double[,] probabilities, PrizeType prizes)
         {
             var count = tickets.GetLength(0);
-            var evResults = new decimal[count];
+            var results = new decimal[count];
 
             var numOfLegs = probabilities.GetLength(0);
             var numOfSelections = probabilities.GetLength(1);
@@ -42,7 +42,7 @@ namespace OddsCalculator
 
 
 
-            return evResults;
+            return results;
         }
 
         public enum PrizeType
