@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EvCalculator\OddsCalculator.csproj">
+    <ProjectReference Include="..\OddsCalculator\OddsCalculator.csproj">
       <Project>{AB1F5423-3A34-48CD-80A6-09361CE4CE81}</Project>
       <Name>OddsCalculator</Name>
     </ProjectReference>
