@@ -37,7 +37,7 @@ namespace OddsCalculator
 
             Trace.Assert(numOfLegs == tickets.GetLength(1));
 
-            //You code goes here
+            //Your code goes here
             //Use the unit tests to find out the requirements
 
 
