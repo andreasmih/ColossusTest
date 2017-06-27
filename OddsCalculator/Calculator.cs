@@ -32,26 +32,95 @@ namespace OddsCalculator
             var count = tickets.GetLength(0);
             var numOfLegs = probabilities.GetLength(0);
             var numOfSelections = probabilities.GetLength(1);
-
             var results = new decimal[count];
+            string key = "";
 
             Trace.Assert(numOfLegs == tickets.GetLength(1));
-
-            Dictionary<string, List<int>> dictionary = new Dictionary<string, List<int> >();
-            decimal[,] oddsDecomposition = new decimal[count,3];
+            
+            Calculator calc = new Calculator();
+            Dictionary<string, List<int>> dictionary = calc.CreateDict(tickets,prizes);
 
             for (int i = 0; i < count; ++i)
             {
                 decimal odds = 1.0m;
                 decimal lost1matchOdd = 0.0m;
                 decimal lost2matchOdd = 0.0m;
-                string key = "";
+                key = "";
 
                 for (int match = 0; match < tickets.GetLength(1); ++match)
                 {
+                    // create the odds and recreate the key for no losses 
                     odds *= (decimal)probabilities[match, tickets[i, match] - 1];
                     key += tickets[i, match].ToString();
                 }
+
+                if (prizes != PrizeType.Win)
+                    for (int lostmatch1=0; lostmatch1<tickets.GetLength(1); lostmatch1++)
+                    {
+                        decimal intermLost2matchOdd = 0.0m;
+
+                        // create odds for 1 loss
+                        decimal intermLost1matchOdd = odds / (decimal)probabilities[lostmatch1, tickets[i, lostmatch1] - 1];
+                        intermLost1matchOdd *= (decimal)(1 - probabilities[lostmatch1, tickets[i, lostmatch1] - 1]);
+
+                        // recreate the *1111 key for 1 lost matches
+                        string memokey1 = key;
+                        StringBuilder sb = new StringBuilder(key);
+                        sb[lostmatch1] = '*';
+                        key = sb.ToString();
+
+                        if (prizes == PrizeType.Consolation2)
+                            for (int lostmatch2 = lostmatch1+1; lostmatch2 < tickets.GetLength(1); lostmatch2++)
+                                if(lostmatch1 != lostmatch2)
+                                {
+                                    // create odds for 2 losses
+                                    intermLost2matchOdd = intermLost1matchOdd / (decimal)probabilities[lostmatch2, tickets[i, lostmatch2] - 1];
+                                    intermLost2matchOdd *= (decimal)(1 - probabilities[lostmatch2, tickets[i, lostmatch2] - 1]);
+                                 
+                                    // recreate the *1*11 key for 2 lost matches
+                                    string memokey = key;
+                                    StringBuilder sb2 = new StringBuilder(key);
+                                    sb2[lostmatch2] = '*';
+                                    key = sb2.ToString();
+
+                                    // divide by the number of possible tickets for this outcome
+                                    intermLost2matchOdd /= dictionary[key].Count;
+
+                                    // add the correct odd to the sum
+                                    lost2matchOdd += intermLost2matchOdd;
+
+                                    // come back to the key with one loss
+                                    key = memokey;
+                                }
+
+                        // divide by the number of possible tickets for this outcome
+                        intermLost1matchOdd /= dictionary[key].Count;
+
+                        // add the correct odd to the sum
+                        lost1matchOdd += intermLost1matchOdd;
+
+                        // come back to the key with no loss
+                        key = memokey1;
+                    }
+                
+                // divide by the number of possible tickets for this outcome
+                odds /= dictionary[key].Count;
+
+                results[i] = Decimal.Round(odds+lost1matchOdd+lost2matchOdd,8);
+            }
+
+            return results;
+        }
+
+        private Dictionary<string, List<int>> CreateDict(int[,] tickets, PrizeType prizes)
+        {
+            Dictionary<string, List<int>> dictionary = new Dictionary<string, List<int>>();
+            string key;
+            for (int i = 0; i < tickets.GetLength(0); ++i)
+            {
+                key = "";
+                for (int match = 0; match < tickets.GetLength(1); ++match)
+                    key += tickets[i, match].ToString();
 
                 /// dictionary creation for full wins
                 if (!dictionary.ContainsKey(key))
@@ -60,13 +129,8 @@ namespace OddsCalculator
 
                 if (prizes != PrizeType.Win)
                 {
-                    
-                    for (int lostmatch1=0; lostmatch1<tickets.GetLength(1); lostmatch1++)
+                    for (int lostmatch1 = 0; lostmatch1 < tickets.GetLength(1); lostmatch1++)
                     {
-                        decimal intermLost2matchOdd = 0.0m;
-                        decimal intermLost1matchOdd = odds / (decimal)probabilities[lostmatch1, tickets[i, lostmatch1] - 1];
-                        intermLost1matchOdd *= (decimal)(1 - probabilities[lostmatch1, tickets[i, lostmatch1] - 1]);
-
                         // create a *1111 key for 1 lost matches
                         string memokey1 = key;
                         StringBuilder sb = new StringBuilder(key);
@@ -76,17 +140,11 @@ namespace OddsCalculator
                             dictionary.Add(key, new List<int>());
                         dictionary[key].Add(i);
 
-
                         if (prizes == PrizeType.Consolation2)
                         {
-                            for (int lostmatch2 = lostmatch1+1; lostmatch2 < tickets.GetLength(1); lostmatch2++)
-                            {
-                                if(lostmatch1 != lostmatch2)
+                            for (int lostmatch2 = lostmatch1 + 1; lostmatch2 < tickets.GetLength(1); lostmatch2++)
+                                if (lostmatch1 != lostmatch2)
                                 {
-                                    intermLost2matchOdd = intermLost1matchOdd / (decimal)probabilities[lostmatch2, tickets[i, lostmatch2] - 1];
-                                    intermLost2matchOdd *= (decimal)(1 - probabilities[lostmatch2, tickets[i, lostmatch2] - 1]);
-                                    lost2matchOdd += intermLost2matchOdd;
-
                                     // create a *1*11 key for 2 lost matches
                                     string memokey = key;
                                     StringBuilder sb2 = new StringBuilder(key);
@@ -97,37 +155,14 @@ namespace OddsCalculator
                                     dictionary[key].Add(i);
                                     key = memokey;
                                 }
-
-                            }
                         }
                         key = memokey1;
-                        lost1matchOdd += intermLost1matchOdd;             
                     }
                 }
-                oddsDecomposition[i, 0] = odds;
-                oddsDecomposition[i, 1] = lost1matchOdd;
-                oddsDecomposition[i, 2] = lost2matchOdd;
-                
             }
 
-            foreach (KeyValuePair<string, List<int>> entry in dictionary)
-            {
-                if(entry.Value.Count > 1)
-                {
-                    for (int i = 0; i < entry.Value.Count; ++i)
-                    {
-                        int stars = entry.Key.Split('*').Length - 1;
-                        oddsDecomposition[entry.Value[i], stars] /= entry.Value.Count;
-                     }
-                }
-            }
-
-            for(int i=0; i<count; ++i)      
-                results[i] = decimal.Round(oddsDecomposition[i, 0] + oddsDecomposition[i, 1] + oddsDecomposition[i, 2],8);
-           
-     
-            return results;
-    }
+            return dictionary;
+        }
 
         public enum PrizeType
         {
