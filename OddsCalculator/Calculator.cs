@@ -38,7 +38,7 @@ namespace OddsCalculator
             Trace.Assert(numOfLegs == tickets.GetLength(1));
             
             Calculator calc = new Calculator();
-            Dictionary<string, List<int>> dictionary = calc.CreateDict(tickets,prizes);
+            Dictionary<string, int> dictionary = calc.CreateDict(tickets,prizes);
 
             for (int i = 0; i < count; ++i)
             {
@@ -84,7 +84,7 @@ namespace OddsCalculator
                                     key = sb2.ToString();
 
                                     // divide by the number of possible tickets for this outcome
-                                    intermLost2matchOdd /= dictionary[key].Count;
+                                    intermLost2matchOdd /= (decimal)dictionary[key];
 
                                     // add the correct odd to the sum
                                     lost2matchOdd += intermLost2matchOdd;
@@ -94,7 +94,7 @@ namespace OddsCalculator
                                 }
 
                         // divide by the number of possible tickets for this outcome
-                        intermLost1matchOdd /= dictionary[key].Count;
+                        intermLost1matchOdd /= (decimal)dictionary[key];
 
                         // add the correct odd to the sum
                         lost1matchOdd += intermLost1matchOdd;
@@ -104,7 +104,7 @@ namespace OddsCalculator
                     }
                 
                 // divide by the number of possible tickets for this outcome
-                odds /= dictionary[key].Count;
+                odds /= (decimal)dictionary[key];
 
                 results[i] = Decimal.Round(odds+lost1matchOdd+lost2matchOdd,8);
             }
@@ -112,9 +112,9 @@ namespace OddsCalculator
             return results;
         }
 
-        private Dictionary<string, List<int>> CreateDict(int[,] tickets, PrizeType prizes)
+        private Dictionary<string, int> CreateDict(int[,] tickets, PrizeType prizes)
         {
-            Dictionary<string, List<int>> dictionary = new Dictionary<string, List<int>>();
+            Dictionary<string, int> dictionary = new Dictionary<string, int>();
             string key;
             for (int i = 0; i < tickets.GetLength(0); ++i)
             {
@@ -124,8 +124,8 @@ namespace OddsCalculator
 
                 /// dictionary creation for full wins
                 if (!dictionary.ContainsKey(key))
-                    dictionary.Add(key, new List<int>());
-                dictionary[key].Add(i);
+                    dictionary.Add(key, 0);
+                dictionary[key]++;
 
                 if (prizes != PrizeType.Win)
                 {
@@ -137,8 +137,8 @@ namespace OddsCalculator
                         sb[lostmatch1] = '*';
                         key = sb.ToString();
                         if (!dictionary.ContainsKey(key))
-                            dictionary.Add(key, new List<int>());
-                        dictionary[key].Add(i);
+                            dictionary.Add(key, 0);
+                        dictionary[key]++;
 
                         if (prizes == PrizeType.Consolation2)
                         {
@@ -151,8 +151,8 @@ namespace OddsCalculator
                                     sb2[lostmatch2] = '*';
                                     key = sb2.ToString();
                                     if (!dictionary.ContainsKey(key))
-                                        dictionary.Add(key, new List<int>());
-                                    dictionary[key].Add(i);
+                                        dictionary.Add(key, 0);
+                                    dictionary[key]++;
                                     key = memokey;
                                 }
                         }
