@@ -61,6 +61,7 @@ namespace OddsCalculator.Tests
             CollectionAssert.AreEqual(expected, result);
         }
 
+
         /// <summary>
         /// Advanced test - bonus point
         /// </summary>
