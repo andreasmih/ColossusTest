@@ -37,10 +37,31 @@ namespace OddsCalculator
 
             Trace.Assert(numOfLegs == tickets.GetLength(1));
 
-            //Your code goes here
-            //Use the unit tests to find out the requirements
+            Dictionary<string, int> dictionary = new Dictionary<string, int>();
+            string[] code = new string[tickets.GetLength(0)];
 
+            for (int i = 0; i < tickets.GetLength(0); ++i)
+            {
+                decimal odds = 1.0m;
+                string key = "";
+                for (int match = 0; match < tickets.GetLength(1); ++match)
+                {
+                    odds *= (decimal)probabilities[match, tickets[i, match] - 1];
+                    key += tickets[i, match].ToString();
+                }
+                results[i] = odds;
+                if (dictionary.ContainsKey(key))
+                    dictionary[key] += 1;
+                else
+                    dictionary.Add(key, 1);
+                code[i] = key;
+            }
 
+            for (int i = 0; i < code.Length; ++i)
+            {
+                results[i] /= (decimal)dictionary[code[i]];
+                results[i] = decimal.Round(results[i], 8);
+            }
 
             return results;
         }
@@ -53,3 +74,4 @@ namespace OddsCalculator
         }
     }
 }
+
